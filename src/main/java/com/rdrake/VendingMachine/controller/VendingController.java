@@ -60,7 +60,6 @@ public class VendingController {
 
     private void returnMoney() {
         view.returnMoney(service.returnChange());
-
     }
 
     private void purchaseItem() throws VendingPersistenceException{
@@ -72,7 +71,6 @@ public class VendingController {
 
     private void insertMoney() {
         service.insertChange(view.inputMoney());
-        ;
     }
 
     private void unknownCommand() {
