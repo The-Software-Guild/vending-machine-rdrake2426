@@ -1,6 +1,9 @@
 package com.rdrake.VendingMachine.controller;
 
+import com.rdrake.VendingMachine.dao.InsufficientFundsException;
+import com.rdrake.VendingMachine.dao.NoItemInventoryException;
 import com.rdrake.VendingMachine.dao.VendingPersistenceException;
+import com.rdrake.VendingMachine.dto.Item;
 import com.rdrake.VendingMachine.service.VendingServiceLayer;
 import com.rdrake.VendingMachine.ui.VendingView;
 
@@ -33,19 +36,20 @@ public class VendingController {
                         break;
                     case 4:
                         keepGoing = false;
+                        returnMoney();
                         break;
                     default:
                         unknownCommand();
                 }
             }
-        } catch (VendingPersistenceException e) {
+        } catch (VendingPersistenceException | NoItemInventoryException | InsufficientFundsException e){
             view.displayErrorMessage(e.getMessage());
-            returnMoney();
         }
+
         exitMessage();
     }
 
-    private void displayChange() {
+    private void displayChange() throws VendingPersistenceException {
         view.displayMoney(service.getChange());
     }
 
@@ -58,18 +62,18 @@ public class VendingController {
         view.displayItemList(service.getItemList());
     }
 
-    private void returnMoney() {
+    private void returnMoney() throws VendingPersistenceException {
         view.returnMoney(service.returnChange());
     }
 
-    private void purchaseItem() throws VendingPersistenceException{
+    private void purchaseItem() throws VendingPersistenceException, NoItemInventoryException, InsufficientFundsException {
         view.displayDisplayItemBanner();
-        String item = view.getItemChoice();
-        item = service.getItem(item);
+        String itemName = view.getItemChoice();
+        Item item = service.getItem(itemName);
         view.displayPurchaseBanner(item);
     }
 
-    private void insertMoney() {
+    private void insertMoney() throws VendingPersistenceException {
         service.insertChange(view.inputMoney());
     }
 

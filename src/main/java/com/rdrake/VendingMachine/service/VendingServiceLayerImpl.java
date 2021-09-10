@@ -1,16 +1,18 @@
 package com.rdrake.VendingMachine.service;
 
-import com.rdrake.VendingMachine.dao.VendingDao;
-import com.rdrake.VendingMachine.dao.VendingDaoFileImpl;
+import com.rdrake.VendingMachine.dao.*;
 import com.rdrake.VendingMachine.dto.Item;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public class VendingServiceLayerImpl implements VendingServiceLayer{
-    VendingDao dao = new VendingDaoFileImpl();
-    public VendingServiceLayerImpl(VendingDao dao){
+    private final VendingDao dao;
+    private VendingAuditDao auditDao;
+
+    public VendingServiceLayerImpl(VendingDao dao, VendingAuditDao auditDao)  {
         this.dao = dao;
+        this.auditDao = auditDao;
     }
 
     @Override
@@ -19,22 +21,27 @@ public class VendingServiceLayerImpl implements VendingServiceLayer{
     }
 
     @Override
-    public String getItem(String item) {
-        return null;
+    public Item getItem(String itemName) throws VendingPersistenceException, InsufficientFundsException, NoItemInventoryException {
+        Item item = dao.getItem(itemName);
+        auditDao.writeAuditEntry("Item Sold: £"+itemName);
+        return item;
     }
 
     @Override
-    public BigDecimal getChange() {
+    public BigDecimal getChange() throws VendingPersistenceException {
         return dao.getChange();
     }
 
     @Override
-    public void insertChange(BigDecimal inputMoney) {
+    public void insertChange(BigDecimal inputMoney) throws VendingPersistenceException {
         dao.addChange(inputMoney);
+        auditDao.writeAuditEntry("Change Added: £"+inputMoney);
     }
 
     @Override
-    public BigDecimal returnChange() {
-        return dao.removeChange();
+    public BigDecimal returnChange() throws VendingPersistenceException {
+        BigDecimal change = dao.removeChange();
+        auditDao.writeAuditEntry("Change Returned: £"+change);
+        return change;
     }
 }

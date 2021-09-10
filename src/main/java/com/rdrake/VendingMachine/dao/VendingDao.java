@@ -9,7 +9,7 @@ public interface VendingDao {
 
     List<Item> getAllItems();
 
-    Item getItem(String itemName);
+    Item getItem(String itemName) throws InsufficientFundsException, NoItemInventoryException;
 
     String purchaseItem(String itemName);
 

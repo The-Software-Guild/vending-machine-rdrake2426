@@ -38,9 +38,16 @@ public class VendingView {
         }
     }
 
+    public void returnMoney(BigDecimal returnChange) {
+        io.print("Returning Change: £"+returnChange);
+        io.readString("Press Enter to Continue");
+    }
+
     public void displayItemList(List<Item> itemList) {
+
         itemList.forEach(item -> io.print(
                 item.getName() + ": " + "£" + item.getCost()));
+        io.print("");
     }
 
     public void displayItem(Item item) {
@@ -58,7 +65,7 @@ public class VendingView {
         return io.readString("Please enter Item name.");
     }
 
-    public void displayPurchaseBanner(String item) {
+    public void displayPurchaseBanner(Item item) {
         if (item != null) {
             io.print("Successfully purchased: "+item);
 
@@ -68,7 +75,7 @@ public class VendingView {
     }
 
     public void displayMoney(BigDecimal money){
-        io.print("Current change: £"+money);
+        io.print("Current change: £"+money+"\n");
     }
 
     public void displayDisplayAllBanner() {
@@ -89,9 +96,5 @@ public class VendingView {
 
     public void displayExitBanner() {
         io.print("Good Bye");
-    }
-
-    public void returnMoney(BigDecimal returnChange) {
-
     }
 }

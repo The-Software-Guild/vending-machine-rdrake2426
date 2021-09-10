@@ -12,7 +12,7 @@ public class App {
         VendingView myView = new VendingView(myIo);
         VendingDao myDao = new VendingDaoFileImpl();
         VendingAuditDao myAuditDao = new VendingAuditDaoFileImpl();
-        VendingServiceLayer myService = new VendingServiceLayerImpl(myDao);
+        VendingServiceLayer myService = new VendingServiceLayerImpl(myDao, myAuditDao);
         VendingController controller = new VendingController(myService, myView);
         controller.run();
     }

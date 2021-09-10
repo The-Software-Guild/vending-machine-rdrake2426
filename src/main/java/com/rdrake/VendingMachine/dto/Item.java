@@ -10,6 +10,11 @@ public class Item {
     private BigDecimal itemCost;
     private int itemCount;
 
+    @Override
+    public String toString() {
+        return itemName;
+    }
+
     public Item(String itemName, BigDecimal itemCost, int itemCount) {
         this.itemName = itemName;
         this.itemCost = itemCost.setScale(2, RoundingMode.HALF_UP);

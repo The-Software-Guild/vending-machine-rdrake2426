@@ -15,14 +15,28 @@ public class VendingDaoFileImpl implements VendingDao {
     private Map<String, Item> items = new HashMap<>();
     private Change change = new Change(new BigDecimal("0").setScale(2,RoundingMode.HALF_UP));
 
+    public VendingDaoFileImpl(){
+        loadItems();
+    }
     @Override
     public List<Item> getAllItems() {
         return new ArrayList<Item>(items.values());
     }
 
     @Override
-    public Item getItem(String ItemTitle) {
-        return items.get(ItemTitle);
+    public Item getItem(String itemName) throws InsufficientFundsException, NoItemInventoryException {
+        Item item = items.get(itemName);
+        if (item == null){
+            throw new NoItemInventoryException("Item \""+itemName+"\" not in Stock");
+        }
+        if (change.getTotalChange().compareTo(item.getCost()) > 0){
+            item.setCount(item.getCount()-1);
+            change.setTotalChange(change.getTotalChange().subtract(item.getCost()));
+            return item;
+        }
+        else{
+            throw new InsufficientFundsException("Insufficient funds:\nItem cost: £"+item.getCost());
+        }
     }
 
     @Override
@@ -56,7 +70,7 @@ public class VendingDaoFileImpl implements VendingDao {
                 Integer.parseInt(itemString[2]));
     }
 
-    private void loadItems() throws VendingPersistenceException {
+    private void loadItems() {
         Scanner scanner;
 
         try {
@@ -64,7 +78,13 @@ public class VendingDaoFileImpl implements VendingDao {
                     new BufferedReader(
                             new FileReader(VENDING_ITEM_FILE)));
         } catch (FileNotFoundException e) {
-            throw new VendingPersistenceException("Could not load data from file into memory.");
+            PrintWriter out;
+            try {
+                out = new PrintWriter(new FileWriter(VENDING_ITEM_FILE));
+            } catch (IOException f) {
+
+            }
+            return;
         }
         String currentLine;
         Item currentItem;
