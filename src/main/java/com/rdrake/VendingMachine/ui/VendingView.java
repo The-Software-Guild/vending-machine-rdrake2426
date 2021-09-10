@@ -91,4 +91,7 @@ public class VendingView {
         io.print("Good Bye");
     }
 
+    public void returnMoney(BigDecimal returnChange) {
+
+    }
 }

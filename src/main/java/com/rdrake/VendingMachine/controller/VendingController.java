@@ -1,7 +1,6 @@
 package com.rdrake.VendingMachine.controller;
 
-import com.rdrake.VendingMachine.dao.VendingException;
-import com.rdrake.VendingMachine.dto.Item;
+import com.rdrake.VendingMachine.dao.VendingPersistenceException;
 import com.rdrake.VendingMachine.service.VendingServiceLayer;
 import com.rdrake.VendingMachine.ui.VendingView;
 
@@ -20,6 +19,7 @@ public class VendingController {
         try {
             while (keepGoing) {
                 displayItems();
+                displayChange();
                 menuSelection = getMenuSelection();
                 switch (menuSelection) {
                     case 1:
@@ -38,10 +38,15 @@ public class VendingController {
                         unknownCommand();
                 }
             }
-        } catch (VendingException e) {
+        } catch (VendingPersistenceException e) {
             view.displayErrorMessage(e.getMessage());
+            returnMoney();
         }
         exitMessage();
+    }
+
+    private void displayChange() {
+        view.displayMoney(service.getChange());
     }
 
     private int getMenuSelection() {
@@ -54,10 +59,11 @@ public class VendingController {
     }
 
     private void returnMoney() {
+        view.returnMoney(service.returnChange());
 
     }
 
-    private void purchaseItem() {
+    private void purchaseItem() throws VendingPersistenceException{
         view.displayDisplayItemBanner();
         String item = view.getItemChoice();
         item = service.getItem(item);
@@ -65,7 +71,8 @@ public class VendingController {
     }
 
     private void insertMoney() {
-
+        service.insertChange(view.inputMoney());
+        ;
     }
 
     private void unknownCommand() {
